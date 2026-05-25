@@ -1,0 +1,26 @@
+<button class="btn btn-sm btn-light-danger destroy-order me-3"><i class="fa-duotone fa-regular fa-trash-can"></i>
+    销毁选中订单
+</button>
+<script>
+
+    ready(() => {
+
+
+        const table = $("#order-table");
+
+        $(".destroy-order").click(function () {
+            const ids = util.idObjToList(table.bootstrapTable('getSelections'));
+            if (ids.length == 0) {
+                layer.msg("请至少勾选1个商品进行操作！");
+                return;
+            }
+
+            message.ask("你确认要永久性删除这些订单吗？这是极度危险操作，这将影响到整个系统的数据统计以及累计，请三思而后行。", () => {
+                $.post("/plugin/DestroyOrder/api/del", {list: ids}, res => {
+                    message.success(res.msg);
+                    table.bootstrapTable('refresh', {silent: true});
+                });
+            });
+        });
+    });
+</script>

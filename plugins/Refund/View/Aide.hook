@@ -1,0 +1,27 @@
+{
+                        field: 'refund', title: '退款', formatter: function (val, item) {
+                            if( item.refund_status == 1 ){
+                                return '<span class="badge badge-light">已退款</span>';
+                            }
+
+                            if (item.status == 0 || !item.owner) {
+                                return '-';
+                            }
+
+                            return '<span class="badge badge-light-primary refund" style="cursor: pointer;" >退款</span>';
+                        },
+                        events: {
+                            'click .refund': function (event, value, row, index) {
+                                layer.confirm('您正在进行退款操作，是否继续？', {
+                                    btn: ['确认退款', '取消']
+                                }, function () {
+                                    let loaderIndex = layer.load(2, {shade: ['0.3', '#fff']});
+                                    $.post("/plugin/refund/api/make", {order_id: row.id}, res => {
+                                        layer.close(loaderIndex);
+                                        layer.msg(res.msg);
+                                        table.bootstrapTable('refresh', {silent: true});
+                                    });
+                                });
+                            }
+                        }
+},

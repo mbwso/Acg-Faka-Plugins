@@ -1,0 +1,238 @@
+#{include file="$default_view_path/Common/Header.html"}
+<style>
+    .lp-search-wrap {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 14px;
+    }
+    .lp-search-box {
+        width: 100%;
+        max-width: 720px;
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 12px;
+        padding: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+    .lp-search-input {
+        flex: 1;
+        min-width: 240px;
+        max-width: 420px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid #dfe3ea;
+        padding: 0 12px;
+        background: #f8fafc;
+        outline: none;
+    }
+    .lp-search-input:focus {
+        border-color: #3b82f6;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+    .lp-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 72px;
+        height: 34px;
+        padding: 0 12px;
+        border-radius: 8px;
+        border: 1px solid #dfe3ea;
+        background: #f8fafc;
+        color: #334155;
+        text-decoration: none;
+        transition: all .15s ease;
+    }
+    .lp-btn:hover {
+        border-color: #3b82f6;
+        color: #2563eb;
+        background: #eff6ff;
+    }
+    .lp-nav-highlight {
+        color: #ffffff;
+        background: linear-gradient(90deg, #2563eb, #3b82f6);
+        border-color: #1d4ed8;
+        font-weight: 700;
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+    }
+    .lp-nav-highlight:hover {
+        color: #ffffff;
+        border-color: #1e40af;
+        background: linear-gradient(90deg, #1d4ed8, #2563eb);
+        transform: translateY(-1px);
+    }
+    .lp-orders-wrap {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        padding: 12px;
+    }
+    .lp-orders-wrap .table { margin-bottom: 0; background: #fff; }
+    .lp-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 56px;
+        height: 28px;
+        padding: 0 8px;
+        border-radius: 6px;
+        border: 1px solid #dfe3ea;
+        background: #f8fafc;
+        color: #334155;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all .15s ease;
+        text-decoration: none;
+        margin-right: 4px;
+    }
+    .lp-action-btn:hover {
+        border-color: #3b82f6;
+        color: #2563eb;
+        background: #eff6ff;
+    }
+    .lp-action-btn.refill {
+        border-color: #10b981;
+        color: #059669;
+        background: #f0fdf4;
+    }
+    .lp-action-btn.cancel {
+        border-color: #ef4444;
+        color: #dc2626;
+        background: #fef2f2;
+    }
+    .lp-action-btn:disabled,
+    .lp-action-btn.disabled {
+        pointer-events: none;
+        opacity: .5;
+    }
+</style>
+<main class="container py-4">
+    <div class="panel">
+        <div class="panel-header">
+            <span class="icon"><i class="fa-duotone fa-regular fa-rectangle-list"></i></span>
+            <h6 class="panel-title"></h6>
+        </div>
+        <div class="panel-body" style="padding-top: 60px;">
+            <form method="get" action="/plugin/lumepanel/index/orders" class="lp-search-wrap">
+                <div class="lp-search-box">
+                    <input type="text" class="lp-search-input" name="keywords" value="#{$keywords|default:''}"
+                           placeholder="搜索订单号、服务ID、服务名称、链接或状态">
+                    <button type="submit" class="lp-btn">搜索</button>
+                    <a href="/plugin/lumepanel/index/orders" class="lp-btn">重置</a>
+                    <a href="/plugin/lumepanel/index/index" class="lp-btn lp-nav-highlight">服务查看</a>
+                </div>
+            </form>
+            #{if $needLogin}
+                <div class="alert alert-warning">请先登录后查看订单。<a href="/user/authentication/login">立即登录</a></div>
+            #{elseif count($orders) == 0}
+                <div class="alert alert-info">暂无订单记录。</div>
+            #{else}
+                <div class="lp-orders-wrap table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>订单号</th>
+                            <th>服务</th>
+                            <th>数量</th>
+                            <th>金额</th>
+                            <th>状态</th>
+                            <th>开始数</th>
+                            <th>剩余量</th>
+                            <th>目标链接</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        #{foreach $orders as $od}
+                            <tr>
+                                <td>#{$od.create_time}</td>
+                                <td>#{$od.order_no}</td>
+                                <td>[#{$od.service_id}] #{$od.service_name}</td>
+                                <td>#{$od.quantity}</td>
+                                <td>#{$od.amount}</td>
+                                <td>#{if $od.status}#{$od.status}#{else}CREATED#{/if}</td>
+                                <td>#{if $od.start_count}#{$od.start_count}#{else}-#{/if}</td>
+                                <td>#{if $od.remains}#{$od.remains}#{else}-#{/if}</td>
+                                <td>#{if $od.link}<a href="#{$od.link}" target="_blank" rel="noopener noreferrer" class="text-primary" style="max-width: 150px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">#{$od.link}</a>#{else}-#{/if}</td>
+                                <td>
+                                    <button class="lp-action-btn refill" data-order="#{$od.order_no}" data-action="refill">补单</button>
+                                    <button class="lp-action-btn cancel" data-order="#{$od.order_no}" data-action="cancel">取消</button>
+                                </td>
+                            </tr>
+                        #{/foreach}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 text-muted text-center text-sm">
+                    订单状态数据来自缓存，最后更新时间：#{$cachedAt|default:'暂无'}
+                </div>
+            #{/if}
+        </div>
+    </div>
+</main>
+<script>
+(() => {
+    const post = async (action, data) => {
+        try {
+            const body = new URLSearchParams();
+            body.append("action", action);
+            Object.keys(data).forEach((key) => {
+                body.append(key, data[key] ?? "");
+            });
+            const resp = await fetch("/plugin/lumepanel/api/orderAction", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+                },
+                body: body.toString()
+            });
+            return await resp.json();
+        } catch (e) {
+            return {code: 500, msg: "请求失败，请稍后重试"};
+        }
+    };
+
+    document.addEventListener("click", async (event) => {
+        const btn = event.target.closest(".lp-action-btn");
+        if (!btn) {
+            return;
+        }
+
+        const orderNo = String(btn.getAttribute("data-order") || "");
+        const action = String(btn.getAttribute("data-action") || "");
+
+        if (!orderNo || !action) {
+            return;
+        }
+
+        const confirmMsg = action === "refill" 
+            ? `确定要对订单 ${orderNo} 发起补单吗？`
+            : `确定要取消订单 ${orderNo} 吗？此操作可能无法撤销。`;
+
+        if (!confirm(confirmMsg)) {
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = "处理中...";
+
+        const res = await post(action, {order: orderNo});
+
+        btn.disabled = false;
+        btn.innerHTML = action === "refill" ? "补单" : "取消";
+
+        if (res.code === 200) {
+            alert(res.msg || (action === "refill" ? "补单申请已提交" : "取消申请已提交"));
+        } else {
+            alert(res.msg || (action === "refill" ? "补单失败" : "取消失败"));
+        }
+    });
+})();
+</script>
+#{include file="$default_view_path/Common/Footer.html"}

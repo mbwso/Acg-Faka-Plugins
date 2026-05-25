@@ -1,0 +1,28 @@
+<script src="https://l2dwidget.js.org/lib/L2Dwidget.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        L2Dwidget.init({
+            // 引用的模型
+            "model": {
+                jsonPath: "#{$cfg.model}",
+                "scale": 1
+            },
+            // 模型的样式，可以自行更改
+            "display": {
+                "position": "#{$cfg.position}",
+                "width": "#{$cfg.width}",
+                "height": "#{$cfg.height}",
+                "hOffset": "#{$cfg.hOffset}",
+                "vOffset": "#{$cfg.vOffset}"
+            },
+            "mobile": {
+                "show": #{if $cfg.mobile == "1"} true #{else} false #{/if},
+                "scale": "#{$cfg.mobile_scale}"
+            },
+            "react": {
+                "opacityDefault": 1,
+                "opacityOnHover": 0.2
+            }
+        });
+    });
+</script>
