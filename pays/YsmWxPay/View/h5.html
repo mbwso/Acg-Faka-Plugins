@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+    <meta name="aplus-terminal" content="1"/>
+    <meta name="apple-mobile-web-app-title" content="Vote"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="format-detection" content="telephone=no, address=no"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    <link rel="icon" href="/app/Pay/YsmWxPay/View/Assets/img/wxpaylogo.png">
+    <title>微信支付</title>
+    <link rel="stylesheet" href="https://res.wx.qq.com/t/wx_fed/weui-source/res/2.5.16/weui.min.css"/>
+    <script src="/assets/static/jquery.min.js"></script>
+    <script src="/assets/static/layer/layer.js"></script>
+    <script type="text/javascript" src="/app/Pay/YsmWxPay/View/Assets/js/pay.js"></script>
+    <style>
+        body {
+            font-family: PingFang SC, "Helvetica Neue", Arial, sans-serif;
+        }
+        .order_box {
+            text-align: center;
+            margin-top: 60px;
+        }
+    </style>
+ 
+</head>
+<body>
+    <div class="order_box">
+        <div class="page">
+            <div class="weui-msg">
+                <div class=""><i class="weui-icon-success weui-icon_msg"></i></div>
+                <div class="weui-msg__text-area">
+                    <h2 class="weui-msg__title">请打开微信</h2>
+                    <h5 class="weui-msg__title">#{number_format($order.amount, 2)}元</h5>
+                </div>
+                <div class="weui-msg__opr-area">
+                    <div class="weui-btn-area">
+                        <div id="openwx" class="weui-btn weui-btn_primary">微信支付</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.location.replace("#{$order.pay_url}");
+        let tradeNo = '#{$order.trade_no}';
+        //查询订单
+        pay.queryTimer(tradeNo, null, res => {
+            layer.msg('支付成功');
+            setTimeout(() => {
+                window.location.href = "/user/index/query?tradeNo=" + tradeNo;
+            }, 1000);
+        }, res => {
+            layer.msg('订单已被关闭');
+            setTimeout(() => {
+                window.location.href = "/user/index/query?tradeNo=" + tradeNo;
+            }, 1000);
+        });
+        $("#openwx").click(function(){
+            window.location.replace("#{$order.pay_url}");
+        });
+    </script>
+</body>
+</html>
