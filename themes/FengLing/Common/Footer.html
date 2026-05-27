@@ -1,0 +1,18 @@
+    </div>
+</main>
+
+<footer class="fl-footer">
+    <div class="fl-container">
+        <p>© #{date('Y')} #{$config.shop_name|default:$config.title} · Powered by <a href="https://github.com/NoDoorAction/Acg-Faka-Local" target="_blank">Acg-Faka</a></p>
+        #{if $config.icp}<p class="fl-footer-icp">#{$config.icp}</p>#{/if}
+    </div>
+</footer>
+
+<!--start::HOOK-->
+#{hook(\App\Consts\Hook::USER_VIEW_INDEX_BODY)}
+<!--end::HOOK-->
+</body>
+<!--start::HOOK-->
+#{hook(\App\Consts\Hook::USER_VIEW_INDEX_FOOTER)}
+<!--end::HOOK-->
+</html>

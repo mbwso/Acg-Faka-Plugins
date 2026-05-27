@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-05-26",
+  "updated_at": "2026-05-27",
   "notice": "本仓库为 Acg-Faka-Local 的 GitHub 插件市场，前端会读取本 JSON 渲染插件列表，安装时根据 path 字段从仓库子目录拉取文件。type: 0=通用插件 1=支付插件 2=主题模板。",
   "items": [
     {
@@ -736,6 +736,21 @@
       "tags": [],
       "min_app_version": "3.4.9",
       "homepage": "https://github.com/NoDoorAction/Acg-Faka-Plugins/tree/main/pays/YsmWxPay",
+      "download_url": null
+    },
+    {
+      "key": "FengLing",
+      "type": 2,
+      "name": "风铃发卡",
+      "version": "1.0.0",
+      "author": "Acg-Faka-Plugins",
+      "description": "风铃发卡——单页响应式商城模板，PC 与移动端共用一套布局，专注前台下单体验。",
+      "web_site": "",
+      "icon": "",
+      "path": "themes/FengLing",
+      "tags": [],
+      "min_app_version": "3.4.9",
+      "homepage": "https://github.com/NoDoorAction/Acg-Faka-Plugins/tree/main/themes/FengLing",
       "download_url": null
     },
     {
