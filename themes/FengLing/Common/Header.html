@@ -33,14 +33,14 @@
 <header class="fl-topbar">
     <div class="fl-container fl-topbar-inner">
         <a class="fl-brand" href="/">
-            <img class="fl-brand-logo" src="#{$favicon}" alt="#{$config.shop_name|default:$config.title}">
-            <span class="fl-brand-text">#{$config.shop_name|default:$config.title}</span>
+            <img class="fl-brand-logo" src="#{$favicon}" alt="#{$config.shop_name}">
+            <span class="fl-brand-text">#{if $config.shop_name}#{$config.shop_name}#{else}#{$config.title}#{/if}</span>
         </a>
         <nav class="fl-topnav">
-            <a class="fl-topnav-link #{if $_route eq '/'}is-active#{/if}" href="/">
+            <a class="fl-topnav-link" href="/">
                 <i class="fa fa-home"></i><span>首页</span>
             </a>
-            <a class="fl-topnav-link #{if strpos($_route, '/user/index/query') !== false}is-active#{/if}" href="/user/index/query">
+            <a class="fl-topnav-link" href="/user/index/query">
                 <i class="fa fa-search"></i><span>订单查询</span>
             </a>
             #{if $config.service_url}
@@ -48,11 +48,6 @@
                     <i class="fa fa-headphones"></i><span>联系客服</span>
                 </a>
             #{/if}
-            #{foreach from=hook(\App\Consts\Hook::USER_VIEW_HEADER_NAV) item=item}
-                <a class="fl-topnav-link" href="#{$item.url}" target="#{$item.target}">
-                    <i class="#{$item.icon}"></i><span>#{$item.name}</span>
-                </a>
-            #{/foreach}
         </nav>
         <div class="fl-topbar-user">
             #{if $user}

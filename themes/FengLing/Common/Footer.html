@@ -3,7 +3,7 @@
 
 <footer class="fl-footer">
     <div class="fl-container">
-        <p>© #{date('Y')} #{$config.shop_name|default:$config.title} · Powered by <a href="https://github.com/NoDoorAction/Acg-Faka-Local" target="_blank">Acg-Faka</a></p>
+        <p>© #{if $config.shop_name}#{$config.shop_name}#{else}#{$config.title}#{/if} · Powered by <a href="https://github.com/NoDoorAction/Acg-Faka-Local" target="_blank">Acg-Faka</a></p>
         #{if $config.icp}<p class="fl-footer-icp">#{$config.icp}</p>#{/if}
     </div>
 </footer>

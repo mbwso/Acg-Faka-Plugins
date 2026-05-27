@@ -9,8 +9,8 @@ interface Config
 {
     const INFO = [
         "NAME" => "风铃发卡",
-        "AUTHOR" => "Acg-Faka-Plugins",
-        "VERSION" => "1.0.0",
+        "AUTHOR" => "YeBai466",
+        "VERSION" => "1.0.1",
         "WEB_SITE" => "#",
         "DESCRIPTION" => "风铃发卡——单页响应式商城模板，PC 与移动端共用一套布局，专注前台下单体验。",
         "RENDER" => Render::ENGINE_SMARTY,
@@ -44,8 +44,8 @@ interface Config
     ];
 
     const THEME = [
-        "INDEX" => "Index.html",
-        "ITEM" => "Index.html",
-        "QUERY" => "Query.html",
+        "INDEX" => "Shop/Index.html",
+        "ITEM" => "Shop/Index.html",
+        "QUERY" => "Shop/Query.html",
     ];
 }

@@ -1,4 +1,4 @@
-#{include file="Common/Header.html"}
+#{include file="../Common/Header.html"}
 
 <section class="fl-query">
     <div class="fl-query-card">
@@ -21,11 +21,12 @@
     </div>
 </section>
 
-#{include file="Common/Footer.html"}
+#{include file="../Common/Footer.html"}
 
 <script>
 (function () {
     if (typeof acg === 'undefined' || !acg.ready) return;
+    var hasUser = #{if $user}true#{else}false#{/if};
     acg.ready("#{$from}", function () {
         var $keywords = $('.keywords');
         var $empty = $('.notfound');
@@ -49,7 +50,7 @@
             var leave = order.leave_message
                 ? '<div class="fl-order-row"><span>使用说明</span><strong>' + escapeHtml(order.leave_message) + '</strong></div>'
                 : '';
-            var pwd = (order.commodity.password_status == 1 && !#{if $user}true#{else}false#{/if})
+            var pwd = (order.commodity.password_status == 1 && !hasUser)
                 ? '<input type="text" class="fl-input fl-order-pwd query-password passId-' + order.id + '" placeholder="请输入查询密码">'
                 : '';
 
@@ -122,7 +123,9 @@
             if (e.which === 13) { e.preventDefault(); query($keywords.val()); }
         });
 
-        #{if $tradeNo}query("#{$tradeNo}");#{elseif $user}query("");#{/if}
+        var initialTradeNo = "#{$tradeNo|default:''}";
+        if (initialTradeNo) { query(initialTradeNo); }
+        else if (hasUser) { query(""); }
     });
 }());
 </script>
