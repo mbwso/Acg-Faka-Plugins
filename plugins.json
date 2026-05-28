@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-05-27",
+  "updated_at": "2026-05-28",
   "notice": "本仓库为 Acg-Faka-Local 的 GitHub 插件市场，前端会读取本 JSON 渲染插件列表，安装时根据 path 字段从仓库子目录拉取文件。type: 0=通用插件 1=支付插件 2=主题模板。",
   "items": [
     {
@@ -424,6 +424,21 @@
       "download_url": null
     },
     {
+      "key": "TelegramBot",
+      "type": 0,
+      "name": "Telegram 智能购物机器人",
+      "version": "1.0.0",
+      "author": "NoDoorAction",
+      "description": "将商城 1:1 搬到 Telegram：商品浏览、SKU/账号预选下单、Bot 与网页账号互通、Topic 模式双向客服、推广分销返利推送。仅需配置 Bot Token 即可启用。",
+      "web_site": "https://github.com/NoDoorAction/Acg-Faka-Plugins",
+      "icon": "",
+      "path": "plugins/TelegramBot",
+      "tags": [],
+      "min_app_version": "3.4.9",
+      "homepage": "https://github.com/NoDoorAction/Acg-Faka-Plugins/tree/main/plugins/TelegramBot",
+      "download_url": null
+    },
+    {
       "key": "VideoBackground",
       "type": 0,
       "name": "网站视频背景",
@@ -736,21 +751,6 @@
       "tags": [],
       "min_app_version": "3.4.9",
       "homepage": "https://github.com/NoDoorAction/Acg-Faka-Plugins/tree/main/pays/YsmWxPay",
-      "download_url": null
-    },
-    {
-      "key": "FengLing",
-      "type": 2,
-      "name": "风铃发卡",
-      "version": "1.0.1",
-      "author": "YeBai466",
-      "description": "风铃发卡——单页响应式商城模板，PC 与移动端共用一套布局，专注前台下单体验。",
-      "web_site": "",
-      "icon": "",
-      "path": "themes/FengLing",
-      "tags": [],
-      "min_app_version": "3.4.9",
-      "homepage": "https://github.com/NoDoorAction/Acg-Faka-Plugins/tree/main/themes/FengLing",
       "download_url": null
     },
     {

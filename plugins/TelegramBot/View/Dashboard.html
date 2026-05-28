@@ -1,0 +1,85 @@
+#{include file=$manage_view_path|cat:"/Header.html"}
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    📱 Telegram Bot 控制台
+                </div>
+                <div class="layui-card-body">
+                    #{if $err}
+                        <div class="layui-elem-quote layui-quote-nm" style="border-left-color:#e74c3c;color:#e74c3c;">
+                            ❌ Bot Token 校验失败：{$err}
+                        </div>
+                    #{elseif $bot}
+                        <div class="layui-elem-quote layui-quote-nm" style="border-left-color:#27ae60;">
+                            ✅ Bot 在线：<b>@{$bot.username}</b>（{$bot.first_name}）
+                        </div>
+                    #{else}
+                        <div class="layui-elem-quote layui-quote-nm">
+                            ⚠️ 请先在「插件管理 → 配置」中填写 Bot Token
+                        </div>
+                    #{/if}
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md4">
+            <div class="layui-card">
+                <div class="layui-card-header">📊 数据统计</div>
+                <div class="layui-card-body">
+                    <ul style="line-height:2.2;">
+                        <li>👥 Bot 总用户：<b>{$stats.tg_users}</b></li>
+                        <li>🔗 已绑定账号：<b>{$stats.bound}</b></li>
+                        <li>🧾 累计订单：<b>{$stats.orders}</b></li>
+                        <li>💬 客服会话：<b>{$stats.topics}</b></li>
+                        <li>📩 消息映射：<b>{$stats.msg_maps}</b></li>
+                        <li>📡 当前 offset：<b>{$offset}</b></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md8">
+            <div class="layui-card">
+                <div class="layui-card-header">🚀 启动 Bot（小白福音 30 秒上手）</div>
+                <div class="layui-card-body">
+                    <h3>方式一：Linux supervisord（推荐 7x24）</h3>
+                    <pre style="background:#f4f5f7;padding:10px;border-radius:6px;overflow:auto;">
+[program:acgshop_telegrambot]
+directory=/path/to/Acg-Faka-Local
+command=php app/Plugin/TelegramBot/bot.php
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/tgbot.err.log
+stdout_logfile=/var/log/tgbot.out.log
+                    </pre>
+
+                    <h3>方式二：命令行直接跑</h3>
+                    <pre style="background:#f4f5f7;padding:10px;border-radius:6px;">cd /path/to/Acg-Faka-Local
+nohup php app/Plugin/TelegramBot/bot.php &gt; runtime/tgbot.log 2&gt;&amp;1 &amp;</pre>
+
+                    <h3>方式三：定时 cron（每分钟拉一次，适合宝塔/虚拟主机）</h3>
+                    <p>① 在「插件配置」里设 <code>cron_token = 一串随机字符</code>，然后：</p>
+                    <pre style="background:#f4f5f7;padding:10px;border-radius:6px;">* * * * * curl -s "https://你的域名/plugin/TelegramBot/cli/run?token=你设置的token" &gt; /dev/null</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">📋 部署清单</div>
+                <div class="layui-card-body">
+                    <ol style="line-height:2;">
+                        <li>在 <a href="https://t.me/BotFather" target="_blank">@BotFather</a> 创建 Bot，拿到 Token 填进配置</li>
+                        <li>新建一个 <b>supergroup</b>，在群设置中开启「Topics」功能，将你的 Bot 拉进群并设为管理员，授予「管理 Topic」权限</li>
+                        <li>拿到群 ID（可以临时用 <a href="https://t.me/getidsbot" target="_blank">@getidsbot</a>），形如 <code>-1001234567890</code>，填进配置「客服管理群 ID」</li>
+                        <li>把自己的 Telegram ID 填到「管理员 Telegram ID」</li>
+                        <li>启动 Bot（见上方任一方式），@你的Bot 发 <code>/start</code> 即可体验</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+#{include file=$manage_view_path|cat:"/Footer.html"}
