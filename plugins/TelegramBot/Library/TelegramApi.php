@@ -194,4 +194,30 @@ class TelegramApi
     {
         return $this->safeCall('getMe');
     }
+
+    public function setWebhook(string $url, string $secretToken = '', array $allowedUpdates = []): ?array
+    {
+        $params = [
+            'url'             => $url,
+            'max_connections' => 40,
+            'drop_pending_updates' => false,
+        ];
+        if ($secretToken !== '') {
+            $params['secret_token'] = $secretToken;
+        }
+        if ($allowedUpdates) {
+            $params['allowed_updates'] = $allowedUpdates;
+        }
+        return $this->call('setWebhook', $params);
+    }
+
+    public function deleteWebhook(bool $dropPending = false): ?array
+    {
+        return $this->safeCall('deleteWebhook', ['drop_pending_updates' => $dropPending]);
+    }
+
+    public function getWebhookInfo(): ?array
+    {
+        return $this->safeCall('getWebhookInfo');
+    }
 }

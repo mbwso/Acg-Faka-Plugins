@@ -2,7 +2,8 @@
 
 把整个商城 **1:1** 复刻到 Telegram，并附带 **Topic 模式双向客服** + **分销返利推送** + **Bot↔网页账号互通**。
 
-> 仅需在后台填一个 **Bot Token**，最简 30 秒上手。
+> **🚀 装好填好就能用，零常驻进程**（Webhook 模式默认）。
+> 仅需 **Bot Token + HTTPS 域名** 两个东西，30 秒上手。
 
 ---
 
@@ -22,13 +23,26 @@
 
 ---
 
+## 🚀 30 秒上手（Webhook 模式 · 零常驻进程）
+
+1. 在 [@BotFather](https://t.me/BotFather) 用 `/newbot` 创建 Bot，复制 Token
+2. 后台「插件管理」启用 TelegramBot，配置里填：
+   - **Bot Token** = 上一步复制的
+   - **Webhook 域名** = 你的站点 HTTPS 根，如 `https://shop.example.com`（留空则取主程序「网站设置 → 站点 URL」）
+3. 保存配置 → 点击「启用」
+4. 插件自动调 Telegram `setWebhook` 完成注册 → @你的Bot 发 `/start` 即可使用
+
+> **就这样。** 不用启动任何进程，不用 supervisord，不用 cron。
+> Telegram 主动把每条消息 POST 到 `https://你的站点/plugin/TelegramBot/webhook/recv`，PHP-FPM 接住即可。
+>
+> 启用后访问后台「📱 TG Bot」控制台可看到完整 Webhook 注册状态。
+> 详细使用说明、双向客服群配置、常见错误诊断 → 后台 **📖 Wiki** 页：`/plugin/TelegramBot/admin/wiki`
+
+---
+
 ## 🧱 依赖
 
-主程序已自带的依赖：
-- `guzzlehttp/guzzle` ≥ 7.4
-- `illuminate/database` ≥ 7.30.6
-- `firebase/php-jwt` ≥ 6.11
-- PHP ≥ 8.0
+主程序已自带：`guzzlehttp/guzzle ≥7.4`、`illuminate/database ≥7.30.6`、`firebase/php-jwt ≥6.11`、PHP ≥ 8.0。
 
 插件本身 **不需要 composer install**，零额外依赖。
 
@@ -53,14 +67,16 @@ cp -r /tmp/repo/plugins/TelegramBot ./TelegramBot
 
 ---
 
-## ⚙️ 配置
+## ⚙️ 配置项
 
 后台 → 插件管理 → TelegramBot → 配置：
 
 | 字段 | 必填 | 说明 |
 | --- | --- | --- |
 | **Bot Token** | ✅ | 在 [@BotFather](https://t.me/BotFather) 创建 Bot 后获得 |
-| **客服管理群 ID** | ⚠️ 用客服时必填 | 形如 `-1001234567890`。需开启 **Topics** 的 supergroup，Bot 设为管理员并授「管理 Topic」 |
+| **运行模式** | 默认 webhook | `webhook`(推荐) / `polling`(无 HTTPS 时用) |
+| **Webhook 域名** | webhook 模式建议填 | 形如 `https://shop.example.com`，留空则用「站点 URL」 |
+| **客服管理群 ID** | ⚠️ 用客服时必填 | 形如 `-1001234567890`，需开启 Topics 的 supergroup |
 | **管理员 Telegram ID** | ⚠️ 用客服管理命令时必填 | 多个用英文逗号分隔 |
 | 启用双向客服 | 否 | 默认开 |
 | 启用推广分销返利推送 | 否 | 默认开 |
@@ -71,15 +87,15 @@ cp -r /tmp/repo/plugins/TelegramBot ./TelegramBot
 | 客服首次接入提示 | 否 | 自定义 |
 | 消息限频（秒） | 否 | 默认 2 |
 | 禁用 SSL 校验 | 否 | 某些环境需要 |
-| Cron Token | 仅 HTTP 模式 | 见下方启动方式 |
+| Cron Token | 仅 polling+HTTP cron 模式 | 见下方备用方式 |
 
 ---
 
-## 🚀 启动 Bot（任选其一）
+## 🔁 备用：Long Polling 模式（无 HTTPS 时用）
 
-### 🥇 方式一：CLI + supervisord（推荐 7x24 稳定）
+如果你的站点确实无法上 HTTPS（罕见），把「运行模式」切到 `polling`，然后任选一种：
 
-`/etc/supervisor/conf.d/acgshop_telegrambot.conf`:
+### supervisord（推荐 7x24）
 
 ```ini
 [program:acgshop_telegrambot]
@@ -87,48 +103,21 @@ directory=/path/to/Acg-Faka-Local
 command=php app/Plugin/TelegramBot/bot.php
 autostart=true
 autorestart=true
-startretries=10
-stderr_logfile=/var/log/tgbot.err.log
-stdout_logfile=/var/log/tgbot.out.log
-user=www-data
 ```
 
-```bash
-supervisorctl reread && supervisorctl update && supervisorctl start acgshop_telegrambot
-```
-
-### 🥈 方式二：命令行直接跑（开发/小流量）
+### 命令行直接跑
 
 ```bash
-cd /path/to/Acg-Faka-Local
 nohup php app/Plugin/TelegramBot/bot.php > runtime/tgbot.log 2>&1 &
 ```
 
-### 🥉 方式三：HTTP cron 拉取（适合宝塔/虚拟主机不能开常驻进程）
+### HTTP cron 定时拉取
 
-1. 在配置里设 `cron_token = 随机字符串`（如 `openssl rand -hex 16`）
-2. 添加定时任务，每分钟拉一次：
+1. 配置「Cron Token = 随机字符串」
+2. 加 cron：
    ```cron
    * * * * * curl -s "https://你的域名/plugin/TelegramBot/cli/run?token=你的cron_token" > /dev/null
    ```
-
-> Run 模式：每次调用最多跑 50 秒，期间 long-poll 取消息；适合 1 分钟级别的 cron。
-
----
-
-## 📋 部署清单（30 秒上手版）
-
-1. ✅ 在 [@BotFather](https://t.me/BotFather) 用 `/newbot` 命令创建 Bot，复制 Token
-2. ✅ 后台「插件管理」启用 TelegramBot，填 Token
-3. ✅ 启动 Bot（任选一种方式）
-4. ✅ Telegram 里搜你的 Bot → `/start` —— 立即可用！
-
-> 👇 如果你要双向客服 / 群通知：
-
-5. 新建一个 supergroup，设置里开启「Topics」
-6. 把你的 Bot 拉进群，设为管理员，授予「管理 Topic」权限
-7. 用 [@getidsbot](https://t.me/getidsbot) 查到群 ID（形如 `-100...`），填进配置
-8. 把自己的 TG ID 填到「管理员 Telegram ID」
 
 ---
 
@@ -158,7 +147,7 @@ nohup php app/Plugin/TelegramBot/bot.php > runtime/tgbot.log 2>&1 &
 🫧 重载菜单
 ```
 
-### 商品详情页（自动跟随 SKU 切换价格）
+### 商品详情页
 
 ```
 👜 账号带SKU带预选测试
@@ -194,7 +183,9 @@ nohup php app/Plugin/TelegramBot/bot.php > runtime/tgbot.log 2>&1 &
 | `/ban` | 封禁当前 Topic 对应的用户，禁止其发送消息 |
 | `/unban` | 解禁 |
 | `/clear` | 删除当前 Topic 所有消息映射 + 删除该 Topic |
-| `/info` | 查看当前 Topic 对应用户的 TG ID / 绑定状态等元信息 |
+| `/info` | 查看当前 Topic 对应用户的 TG ID / 绑定状态等 |
+
+需要发起者 TG ID 在「管理员 Telegram ID」白名单内才生效。
 
 ---
 
@@ -206,9 +197,7 @@ nohup php app/Plugin/TelegramBot/bot.php > runtime/tgbot.log 2>&1 &
 | `plugin_telegrambot_msgmap` | 用户消息 id ↔ 群消息 id 双向映射（用于 reply 链） |
 | `plugin_telegrambot_sso` | 一次性 web 登录 token |
 | `plugin_telegrambot_order` | TG 下单的订单 ↔ tg_user 映射（用于付款后推送） |
-| `plugin_telegrambot_state` | 全局 KV 存储（update offset 等） |
-
-所有表都按规范带 `__PREFIX__plugin_telegrambot_` 前缀。
+| `plugin_telegrambot_state` | 全局 KV 存储（webhook secret / polling offset 等） |
 
 ---
 
@@ -216,26 +205,30 @@ nohup php app/Plugin/TelegramBot/bot.php > runtime/tgbot.log 2>&1 &
 
 - `USER_API_ORDER_PAY_AFTER` — 订单付款成功 → 推送发货 + 返利提醒
 - `ADMIN_VIEW_NAV` — 后台导航栏加一个「📱 TG Bot」入口
-- `Plugin::START` — 启用时校验 Bot Token
+- `Plugin::START` — 启用时校验 Bot Token + 自动注册 Webhook
+- `Plugin::STOP` — 停用时自动 deleteWebhook
+- `Plugin::SAVE_CONFIG` — 保存配置后自动重新 setWebhook
 
 ---
 
 ## 🆘 常见问题
 
-**Q: Bot 收不到消息？**
-A: 检查 1) Bot 进程是否在运行（`ps aux | grep bot.php` 或 supervisor status）  2) 后台 → 控制台页面是否显示「✅ Bot 在线」 3) 防火墙/SSL 设置
+更多 → 后台访问「📖 Wiki」页面：`/plugin/TelegramBot/admin/wiki`
+
+**Q: 启用时报「Telegram Webhook 仅支持 HTTPS」？**
+A: 你填的 Webhook 域名是 `http://`。给域名上 HTTPS 证书，或临时切到 polling 模式。
+
+**Q: 启用时报「setWebhook 拒绝」？**
+A: 检查域名拼写、HTTPS 证书是否有效、Telegram 能否从公网访问到 `/plugin/TelegramBot/webhook/recv`。可用 `curl https://你的域名/plugin/TelegramBot/webhook/info` 自检。
 
 **Q: 双向客服 Topic 没创建？**
-A: 1) 群必须是 supergroup 且开启 Topics  2) Bot 必须是群管理员  3) Bot 必须拥有「管理 Topic」权限
+A: 群必须是 supergroup 且开 Topics，Bot 必须是管理员并有「管理 Topic」权限。
 
 **Q: 下单后没有支付按钮？**
-A: 主程序后台「支付管理」里至少要启用一个 `commodity=1` 的支付通道。
+A: 主程序后台「支付管理」里至少要启用一个 `commodity=1` 的支付通道。本插件不重复造支付，所有 USDT/微信/支付宝/其他通道都走主程序卡网原生。
 
-**Q: 卡网 USDT 通道怎么接？**
-A: 本插件不重复造支付。你在主程序后台正常添加 USDT 支付通道（如 ApiNotification 配合的 EpUsdt / Codepay 等支付插件），Bot 端会自动出现。
-
-**Q: 商品 SKU 名字超长导致 callback_data 超 64 字节怎么办？**
-A: Telegram 限制 callback_data ≤ 64 字节。本插件用 base64 编码 SKU 选择参数，中文 SKU 4-5 个字以内是安全的。如果你的 SKU 名字非常长，建议改短。
+**Q: 商品 SKU 名字超长导致 callback_data 超 64 字节？**
+A: Telegram 限制 callback_data ≤ 64 字节。请把 SKU/race 名称改短（4-5 个中文字符以内）。
 
 ---
 

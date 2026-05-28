@@ -9,6 +9,22 @@ return [
         "placeholder" => "格式如 123456789:AAH...，从 @BotFather 获取",
     ],
     [
+        "title" => "运行模式",
+        "name"  => "run_mode",
+        "type"  => "radio",
+        "dict"  => [
+            ["id" => "webhook", "name" => "Webhook（推荐，零常驻进程，仅需 HTTPS 域名）"],
+            ["id" => "polling", "name" => "Long Polling（无 HTTPS 域名时使用，需常驻进程或定时任务）"],
+        ],
+        "default" => "webhook",
+    ],
+    [
+        "title" => "Webhook 域名（留空=自动用站点 URL）",
+        "name"  => "webhook_domain",
+        "type"  => "input",
+        "placeholder" => "如 https://shop.example.com（必须 HTTPS，不要带尾部斜杠和路径）",
+    ],
+    [
         "title"       => "客服管理群 ID",
         "name"        => "admin_group_id",
         "type"        => "input",
@@ -48,7 +64,7 @@ return [
         "title" => "支持的支付通道（按 ID，留空=全部启用商品支付的通道）",
         "name"  => "pay_ids",
         "type"  => "input",
-        "placeholder" => "多个用逗号分隔，如：1,2,3",
+        "placeholder" => "多个用英文逗号分隔，如：1,2,3",
     ],
     [
         "title" => "Bot 欢迎语",
@@ -75,9 +91,18 @@ return [
         "default" => "0",
     ],
     [
-        "title" => "Cron Token（仅当用 HTTP 拉取模式启动 Bot 时需要）",
+        "title" => "Cron Token（仅 polling 模式 + HTTP cron 时需要）",
         "name"  => "cron_token",
         "type"  => "input",
-        "placeholder" => "建议填一串随机字符；用 supervisord / CLI 启动可留空",
+        "placeholder" => "建议填一串随机字符；CLI 启动可留空",
+    ],
+    [
+        "title" => "📖 使用文档",
+        "name"  => "_wiki_link",
+        "type"  => "html",
+        "default" => '<div style="padding:12px;background:#f0f8ff;border-left:4px solid #1e90ff;border-radius:4px;line-height:1.8;">'
+            . '<b>📘 完整使用文档</b>：<a href="/plugin/TelegramBot/admin/wiki" target="_blank">点击打开 Wiki</a>（推荐先看一遍再启用）<br>'
+            . '<b>🎛️ 状态控制台</b>：<a href="/plugin/TelegramBot/admin/dashboard" target="_blank">点击打开</a>（查看 Bot 状态 / Webhook 状态 / 统计数据）'
+            . '</div>',
     ],
 ];
